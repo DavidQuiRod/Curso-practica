@@ -1,7 +1,15 @@
 package liverpool.pages;
 
+import java.nio.file.Files;
 import java.time.Duration;
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.util.Properties;
 
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.PageFactory;
 import utils.utilities;
 
@@ -15,6 +23,7 @@ import liverpool.locators.HomeLocators;
 
 public class HomePage {
     utilities utilsFuntions;
+    Properties props = new Properties(); //properties para leer un documento
     private final WebDriver driver;
     private static final String URL = "https://www.liverpool.com.mx/";
     private static final String URLSelenium="https://www.selenium.dev/selenium/web/web-form.html";
@@ -49,7 +58,22 @@ public class HomePage {
         }
 
     }
+    public void abrirNavegadorConLaUrl(String urlName){
+        try{
+            utilsFuntions = new utilities(driver);
+            String filePathEnviroment=directorio+"\\src\\test\\java\\config\\environments.properties"; //Archivo de donde estraeremos la url
+            /* se declaro un varible global props para poder generar una ruta de lectura de variables y ambientes en los directorios que nosotros indiquemos*/
+            props.load(Files.newInputStream(new File(filePathEnviroment).toPath())); //Se genera el objecto para leer el archivo
+            String url=String.valueOf(props.get(urlName)); // Se declara una variable cadena para que este obtenga el valor del objeto en forma de cadena de la ruta donde la indicamos
+            driver.get(url);
+            utilsFuntions.takeScrenShot("Se abre el navegador");
+        } catch (IOException |RuntimeException e) {
+            System.out.println("No se logro abrir el navegador revisa tu driver");
+            utilsFuntions.finPrueba();
+            throw new RuntimeException(e);
+        }
 
+    }
     public void search(String text) {
         WebElement input;
         try {

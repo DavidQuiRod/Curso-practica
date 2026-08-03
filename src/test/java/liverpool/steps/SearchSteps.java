@@ -1,5 +1,6 @@
 package liverpool.steps;
 
+import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 
 import io.cucumber.java.en.Given;
@@ -8,11 +9,14 @@ import io.cucumber.java.en.When;
 import liverpool.core.DriverManager;
 import liverpool.pages.HomePage;
 import liverpool.pages.SearchResultsPage;
+import utils.utilities;
 
 public class SearchSteps {
 
     private HomePage homePage;
     private SearchResultsPage resultsPage;
+    
+    utilities utilsFuntions;
 
     @Given("que abro la pagina de Liverpool")
     public void openLiverpool() {
@@ -20,7 +24,18 @@ public class SearchSteps {
         resultsPage = new SearchResultsPage(DriverManager.getDriver());
         homePage.open();
     }
-
+    @Given("El usuario abre la pagina {string} en el navegador")
+    public void openUrlEnNavegador(String url){
+        homePage = new HomePage(DriverManager.getDriver());
+        homePage.abrirNavegadorConLaUrl(url);
+    }
+    //Nueva sentencia gherkin para poder ingresar a una URL atraves de una variable que se manda desde una sentencia gherkin
+    /*
+    public void openChromePage(String nameURLABuscar, String nameNavegador) throws InterruptedException {
+        System.out.println("Se imprime: "+nameURLABuscar);
+        homePage = new HomePage(DriverManager.getDriver());
+        homePage.openNavegador(nameURLABuscar, nameNavegador);
+    }*/
     @When("busco el producto {string}")
     public void searchProduct(String product) {
         homePage.search(product);
@@ -34,6 +49,7 @@ public class SearchSteps {
 
     @When("navego al menu de categorias")
     public void goToCategoriesMenu() {
+        homePage = new HomePage(DriverManager.getDriver());
         homePage.goToMenuCategorias();
     }
 
