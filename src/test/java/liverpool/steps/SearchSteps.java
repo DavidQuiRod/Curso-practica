@@ -1,6 +1,5 @@
 package liverpool.steps;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 
 import io.cucumber.java.en.Given;
@@ -27,7 +26,7 @@ public class SearchSteps {
     @Given("El usuario abre la pagina {string} en el navegador")
     public void openUrlEnNavegador(String url){
         homePage = new HomePage(DriverManager.getDriver());
-        homePage.abrirNavegadorConLaUrl(url);
+        homePage.abrirNavegadorConLaUrlDesdeHomePage(url);
     }
     //Nueva sentencia gherkin para poder ingresar a una URL atraves de una variable que se manda desde una sentencia gherkin
     /*

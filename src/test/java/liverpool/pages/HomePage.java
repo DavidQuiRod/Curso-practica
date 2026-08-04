@@ -3,13 +3,8 @@ package liverpool.pages;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.Duration;
 import java.util.Properties;
 
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.PageFactory;
 import utils.utilities;
 
@@ -58,7 +53,7 @@ public class HomePage {
         }
 
     }
-    public void abrirNavegadorConLaUrl(String urlName){
+    public void abrirNavegadorConLaUrlDesdeHomePage(String urlName){
         try{
             utilsFuntions = new utilities(driver);
             String filePathEnviroment=directorio+"\\src\\test\\java\\config\\environments.properties"; //Archivo de donde estraeremos la url

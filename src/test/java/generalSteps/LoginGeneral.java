@@ -9,6 +9,7 @@
 package generalSteps;
 
 import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -60,7 +61,11 @@ public class LoginGeneral {
             e.printStackTrace();
         }
     }
-
+@Then("El usuario espera {int} segundos")
+    public void esperamosLaCarga(int numTotalSegundos) throws Exception{
+        Thread.sleep(1000* numTotalSegundos);
+        System.out.println("Se hizo una espera de "+numTotalSegundos+ " segundos");
+}
     /*
        public void openUrlEnNavegador(String urlName){
         String rutaFinalChrome= directorio+"\\chromedriver_v150.exe"; //Ruta de dond obtenemos el driver en este caso es el chrome driver.
