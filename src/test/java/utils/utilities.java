@@ -4,10 +4,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.*;
 import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -15,7 +11,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
+import java.util.Comparator;
 import java.util.Properties;
 
 public class utilities {
@@ -35,9 +33,9 @@ public class utilities {
     public void takeScrenShot(String nombreArchivo) {
         String renombradoDeimagen = nombreArchivo.replace(" ", "_"); //Variable para renombrar imagenes
         try {
-            props.load(Files.newInputStream(new File(rutaDeEvidencias).toPath()));
-            String carpetaDeImagenes = String.valueOf(props.get("carpetaDestino"));
-            String rutaFinDeImagenes = directorio + "\\evidencias\\" + carpetaDeImagenes;
+            props.load(Files.newInputStream(new File(rutaDeEvidencias).toPath())); //Vamos a leer el archivo que declaramos en la ruta de evidencias
+            String carpetaDeImagenes = String.valueOf(props.get("carpetaDestino")); //Obtenemos el valor de la variable carpetaDestino y lo almacenamos
+            String rutaFinDeImagenes = directorio + "\\evidencias\\" + carpetaDeImagenes;//Obtenemos el valor de la variable carpetaDestino y lo almacenamos
             //Crear carpeta destino
             File carpetaDondeSeGuardaEvidencias = new File(rutaFinDeImagenes);
             //Si la carpeta no existe creala
@@ -97,19 +95,26 @@ public class utilities {
 
     }
 
-    public void crearReporteWord() throws Exception {
-        props.load(Files.newInputStream(new File(rutaDeEvidencias).toPath()));
-        String nombreDeCarpeta = String.valueOf(props.get("carpetaDestino"));
-        String nombreDeReporte = String.valueOf(props.get("nombreDeReporteDestino"));
-        String rutaDondeExtraeremosLasImagenes = directorio + "\\evidencias\\" + nombreDeCarpeta;
-        String archivoSalidaDeReporte = rutaDondeExtraeremosLasImagenes + "\\"+nombreDeReporte+".docx";
-        Path rutaDeArchivoEnCasoDeExistir = Paths.get(archivoSalidaDeReporte);
-        //Si existe el documento word se procedera a borrar la informacion de ese documento
-        if (Files.exists(rutaDeArchivoEnCasoDeExistir)) {
-            eliminarInformacionDeDocumentoWord(rutaDeArchivoEnCasoDeExistir);
+    public void crearReporteWord(String etiquetaIdentificadoraDeCaso) throws Exception {
+        try {
+            props.load(Files.newInputStream(new File(rutaDeEvidencias).toPath()));  //vamos a leer el archivo que mandamos
+            String nombreDeCarpeta = String.valueOf(props.get("carpetaDestino"));
+            String nombreDeReporte = String.valueOf(props.get("nombreDeReporteDestino"));
+            copiarImagenesYRenombrarlas(etiquetaIdentificadoraDeCaso);
+            String rutaDondeExtraeremosLasImagenes = directorio + "\\evidencias\\" + nombreDeCarpeta + etiquetaIdentificadoraDeCaso;
+            String archivoSalidaDeReporte = rutaDondeExtraeremosLasImagenes + "\\" + nombreDeReporte + etiquetaIdentificadoraDeCaso + ".docx";
+            System.out.println("Valor de la variable rutaDondeExtraeremosLasImagenes: " + rutaDondeExtraeremosLasImagenes);
+            System.out.println("Valor de la variable rutaDondeExtraeremosLasImagenes: " + archivoSalidaDeReporte);
+            Path rutaDeArchivoEnCasoDeExistir = Paths.get(archivoSalidaDeReporte);
+            //Si existe el documento word se procedera a borrar la informacion de ese documento
+            if (Files.exists(rutaDeArchivoEnCasoDeExistir)) {
+                eliminarInformacionDeDocumentoWord(rutaDeArchivoEnCasoDeExistir);
+            }
+            //LLenar de informacion el archivo word
+            vaciarInformacionEnDocumentoWord(rutaDondeExtraeremosLasImagenes, rutaDeArchivoEnCasoDeExistir);
+        } catch (IOException e) {
+            System.err.println("Ocurrió un error al querer crear el reporte " + e.getMessage());
         }
-        //LLenar de informacion el archivo word
-        vaciarInformacionEnDocumentoWord(rutaDondeExtraeremosLasImagenes,rutaDeArchivoEnCasoDeExistir);
     }
 
     private static boolean esImagen(String nombre) {
@@ -139,7 +144,7 @@ public class utilities {
         }
     }
 
-    public void vaciarInformacionEnDocumentoWord(String rutaDeDondeExtrarLasImagenes, Path rutaDeArchivoAllenar){
+    public void vaciarInformacionEnDocumentoWord(String rutaDeDondeExtrarLasImagenes, Path rutaDeArchivoAllenar) {
         /**Extraccion de los nombres de la imagenes**/
         try (XWPFDocument doc = new XWPFDocument()) {
             File folderDeDondeSeExtraranLasImagenes = new File(rutaDeDondeExtrarLasImagenes);
@@ -150,9 +155,9 @@ public class utilities {
                         //Agregar titulo con el nombre de la imagen
                         XWPFParagraph p = doc.createParagraph();
                         XWPFRun run = p.createRun();
-                        String paso=file.getName();
-                        String nombreDePasoParaReporte= paso.replace("_"," ");
-                        run.setText(nombreDePasoParaReporte.substring(0,nombreDePasoParaReporte.length()-4));
+                        String paso = file.getName();
+                        String nombreDePasoParaReporte = paso.replace("_", " ");
+                        run.setText(nombreDePasoParaReporte.substring(0, nombreDePasoParaReporte.length() - 4));
                         run.addBreak();
 
                         //Insertat la imagen en el documento word
@@ -179,6 +184,77 @@ public class utilities {
             finPrueba();
             e.printStackTrace();
         }
+    }
+
+    public void copiarImagenesYRenombrarlas(String etiquetaConLaQueSeRenombrara) throws Exception {
+        try {
+            props.load(Files.newInputStream(new File(rutaDeEvidencias).toPath()));
+            String nombreDeCarpeta = String.valueOf(props.get("carpetaDestino"));
+            String rutaDeDondeVoyAcompiarLasImagenes = directorio + "\\evidencias\\" + nombreDeCarpeta;
+            String rutaDondeVoyADepositarLasImagenesRenombradas = directorio + "\\evidencias\\" + nombreDeCarpeta + etiquetaConLaQueSeRenombrara;
+            File folderDeDondeSeExtraranLasImagenes = new File(rutaDeDondeVoyAcompiarLasImagenes); //Creamos una lista de imagenes
+            File[] listOfFiles = folderDeDondeSeExtraranLasImagenes.listFiles(); //Declaramos un array para recorrer la carpeta donde obtendremos nuetras imagenes
+            if (listOfFiles != null) { // si la lista de archivos es diferente de nulo prosegimos
+                for (File file : listOfFiles) { //Generamos un ciclo for para itirar entre el total de imagenes que hay
+                    if (file.isFile() && esImagen(file.getName())) { // validamos si la varible file es un archivo y ademas si es imagen
+                        Path origen = Paths.get(file.toURI()); //Declaramos la varible origen de tipo path para obtener la ruta donde vamos a copiar la imagen
+                        String nombreDeLaImagen = file.getName(); //Obtenemos el titulo de la imagen
+                        System.out.println("Nombre de imagen " + nombreDeLaImagen);
+                        try {
+                            //Se declara una varibale de tipo file para poder crear una carpeta nueva y poder almacenar las imagenes renombradas
+                            File carpetaDondeSeGuardanLasImagenesRenombradas = new File(rutaDondeVoyADepositarLasImagenesRenombradas);
+                            //Verificamos si la carpeta no existe
+                            if (!carpetaDondeSeGuardanLasImagenesRenombradas.exists()) {
+                                //hay que crearla
+                                boolean crearCarpeta = carpetaDondeSeGuardanLasImagenesRenombradas.mkdir();
+                                System.out.println("Se creo la nueva carpeta destino " + carpetaDondeSeGuardanLasImagenesRenombradas);
+                            }
+                            //     nombreDelaVariable =  nueva carpeta ||      nombre de la imagen    || etiqueta para que se identifiquela nueva imagen || mas la extension de la imagen
+                            //String renombradoDeImagenes=etiquetaConLaQueSeRenombrara+"_"+nombreDeLaImagen; //Se genera la una variable nueva para concatenar los valores
+                            System.out.println("ruta Fin " + nombreDeLaImagen);
+                            Path destino = Paths.get(rutaDondeVoyADepositarLasImagenesRenombradas + "\\" + nombreDeLaImagen);
+                            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
+                            System.out.println("Se renombro la imagen a " + destino);
+                        } catch (IOException e) {
+                            System.out.println("Error al copiar: " + e.getMessage());
+                        }
+                    }
+                }
+            }
+            /*
+        Se crea una copia de las imagenes y se guardan en una nueva carpeta que incluya la etiqueta con la le incluyas en tu sentencia gherkin
+        Esto para poder tener una carpeta donde se almacene las imagenes y el reporte final en cada ejecucion de sin que se agregen imagenes de otro
+        escenario deprueba
+        */
+            //Eliminamos la carpeta origen de donde extraimos las imagenes
+            eliminarCarpetaOrigen(rutaDeDondeVoyAcompiarLasImagenes);
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void eliminarCarpetaOrigen(String rutaDeCarpetaDestino) {
+        Path rutaDeCarpetaAeliminar = Paths.get(rutaDeCarpetaDestino);
+        try {
+            if (Files.exists(rutaDeCarpetaAeliminar)) { //Si existe la carpeta  procedemos a elimiar los archivos
+                // recorremos todos los archivos y subdirectorios.
+                Files.walk(rutaDeCarpetaAeliminar)
+                        .sorted(Comparator.reverseOrder())
+                        .forEach(p -> {
+                            try {
+                                Files.delete(p);
+                            } catch (IOException e) {
+                                System.err.println("No se pudo borrar: " + p);
+                            }
+                        });
+                System.out.println("Directorio eliminado con éxito.");
+            } else {
+                System.out.println("El directorio ingresado " + rutaDeCarpetaDestino + " no existe");
+            }
+        } catch (IOException e) {
+            System.err.println("Ocurrió un error: " + e.getMessage());
+        }
+
     }
 
 }

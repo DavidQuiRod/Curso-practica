@@ -70,9 +70,10 @@ public class SearchSteps {
     public void ingresoPassword() {
         homePage.ingresarValorEnCampoPassword("Pruebas12131212");
     }
-    @When("Finaliza el test y se cierra navegador")
-    public void finTest()throws Exception{
-        homePage.reporteCompleto();
+    @When("finaliza el test {string} y se cierra navegador")
+    public void finTest(String nombreDeCasoDePrueba)throws Exception{
+        System.out.println("Etiqueta "+nombreDeCasoDePrueba);
+        homePage.reporteCompleto(nombreDeCasoDePrueba);
     }
 
 }
