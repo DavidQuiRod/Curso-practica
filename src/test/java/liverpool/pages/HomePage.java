@@ -146,8 +146,8 @@ public class HomePage {
             throw e;
         }
     }
-    public void reporteCompleto()throws Exception{
-        utilsFuntions.crearReporteWord();
+    public void reporteCompleto(String etiquetaDeReporte)throws Exception{
+        utilsFuntions.crearReporteWord(etiquetaDeReporte);
     }
 
 }
