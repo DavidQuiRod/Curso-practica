@@ -8,6 +8,7 @@
 
 package pageObjects;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -72,6 +73,23 @@ public class orangeLoginPageObjects {
             btnLogin.click();
         }catch (Exception e){
             System.out.println("No se logro dar clic en el boton login");
+            utilsFuntions.finPrueba();
+            throw  e;
+        }
+    }
+    public void elUsuarioIngresaValor(String textValue, String nameTxt){
+        String inputName=nameTxt.toLowerCase();
+        String xpathCampo="//input[@name='"+inputName+"' and @placeholder='"+nameTxt+"']";
+        WebElement txtCampo=driver.findElement(By.xpath(xpathCampo));
+        utilsFuntions = new utilities(driver);
+        try{
+            utilsFuntions.elemtIsVisible(txtCampo);
+            utilsFuntions.hightLight(txtCampo);
+            txtCampo.sendKeys(textValue);
+            utilsFuntions.takeScrenShot("Se ingresa valor en el campo "+nameTxt);
+            utilsFuntions.unHightLight(txtCampo);
+        }catch (Exception e){
+            System.out.println("No se logro encontrar el campo "+nameTxt+" donde ibas a igresar el texto");
             utilsFuntions.finPrueba();
             throw  e;
         }
