@@ -20,7 +20,7 @@ public class utilities {
     Properties props = new Properties(); //properties para leer un documento
     WebDriver driver; //Inicializar driver
     String directorio = System.getProperty("user.dir");
-
+    private static int screenshotCounter = 1;
     //Variables globales para tomar screenshot y crear documento
     String rutaDeEvidencias = directorio + "\\src\\test\\java\\config\\configuration_evidencias.properties"; //Ruta donde se modifica el nombre de reporte de pruebas y la carpeta donde se va a crear
 
@@ -36,6 +36,7 @@ public class utilities {
             props.load(Files.newInputStream(new File(rutaDeEvidencias).toPath())); //Vamos a leer el archivo que declaramos en la ruta de evidencias
             String carpetaDeImagenes = String.valueOf(props.get("carpetaDestino")); //Obtenemos el valor de la variable carpetaDestino y lo almacenamos
             String rutaFinDeImagenes = directorio + "\\evidencias\\" + carpetaDeImagenes;//Obtenemos el valor de la variable carpetaDestino y lo almacenamos
+            String indice = String.format("%03d", screenshotCounter++); // Formatea el contador para mantener el orden alfabético (001, 002, etc.)
             //Crear carpeta destino
             File carpetaDondeSeGuardaEvidencias = new File(rutaFinDeImagenes);
             //Si la carpeta no existe creala
@@ -46,7 +47,7 @@ public class utilities {
             }
             // Si ya existe la carpeta hay que ignorar el codigo
             File captura = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-            String capturaImg = rutaFinDeImagenes + "\\" + renombradoDeimagen + ".png";
+            String capturaImg = rutaFinDeImagenes + "\\" + indice+ renombradoDeimagen + ".png";
             File destino = new File(capturaImg);
             //Files.setAttribute(destino,"basic:lastModifiedTime",FileTime.from(Instant.now()));
             //Si existe la imagen hay que borrarla
@@ -100,6 +101,7 @@ public class utilities {
             props.load(Files.newInputStream(new File(rutaDeEvidencias).toPath()));  //vamos a leer el archivo que mandamos
             String nombreDeCarpeta = String.valueOf(props.get("carpetaDestino"));
             String nombreDeReporte = String.valueOf(props.get("nombreDeReporteDestino"));
+            //Copiar imagenes a nueva carpeta
             copiarImagenesYRenombrarlas(etiquetaIdentificadoraDeCaso);
             String rutaDondeExtraeremosLasImagenes = directorio + "\\evidencias\\" + nombreDeCarpeta + etiquetaIdentificadoraDeCaso;
             String archivoSalidaDeReporte = rutaDondeExtraeremosLasImagenes + "\\" + nombreDeReporte + etiquetaIdentificadoraDeCaso + ".docx";
@@ -149,15 +151,16 @@ public class utilities {
         try (XWPFDocument doc = new XWPFDocument()) {
             File folderDeDondeSeExtraranLasImagenes = new File(rutaDeDondeExtrarLasImagenes);
             File[] listOfFiles = folderDeDondeSeExtraranLasImagenes.listFiles();
+            System.out.println("Valor total de lista: " + listOfFiles.length);
             if (listOfFiles != null) {
                 for (File file : listOfFiles) {
                     if (file.isFile() && esImagen(file.getName())) {
                         //Agregar titulo con el nombre de la imagen
                         XWPFParagraph p = doc.createParagraph();
                         XWPFRun run = p.createRun();
-                        String paso = file.getName();
-                        String nombreDePasoParaReporte = paso.replace("_", " ");
-                        run.setText(nombreDePasoParaReporte.substring(0, nombreDePasoParaReporte.length() - 4));
+                        String nombreDeImagen = file.getName();  //nombre imagen -> nombre_imagen.png
+                        String nombreDePasoParaReporte = nombreDeImagen.replace("_", " "); //nombre_imagen -> nombre imagen.png
+                        run.setText(nombreDePasoParaReporte.substring(3, nombreDePasoParaReporte.length() - 4));//nombre imagen
                         run.addBreak();
 
                         //Insertat la imagen en el documento word
@@ -209,12 +212,16 @@ public class utilities {
                                 boolean crearCarpeta = carpetaDondeSeGuardanLasImagenesRenombradas.mkdir();
                                 System.out.println("Se creo la nueva carpeta destino " + carpetaDondeSeGuardanLasImagenesRenombradas);
                             }
-                            //     nombreDelaVariable =  nueva carpeta ||      nombre de la imagen    || etiqueta para que se identifiquela nueva imagen || mas la extension de la imagen
-                            //String renombradoDeImagenes=etiquetaConLaQueSeRenombrara+"_"+nombreDeLaImagen; //Se genera la una variable nueva para concatenar los valores
-                            System.out.println("ruta Fin " + nombreDeLaImagen);
-                            Path destino = Paths.get(rutaDondeVoyADepositarLasImagenesRenombradas + "\\" + nombreDeLaImagen);
-                            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
-                            System.out.println("Se renombro la imagen a " + destino);
+                            System.out.println("Se obtiene el nombre de la imagen  " + nombreDeLaImagen); //Impresion para ver el nombre de la imagen
+                            String rutaDestinoConcatenada = rutaDondeVoyADepositarLasImagenesRenombradas + "\\" + nombreDeLaImagen; //Se crea la variable para concatenar toda la ruta destino
+                            Path destino = Paths.get(rutaDestinoConcatenada); //Se declara la variable destino para que obtenta la ruta del directorio
+                            System.out.println("El valor de la variable destino " + destino); //Se imprime
+                            //Si existe la imagen hay que borrarla
+                            if (Files.deleteIfExists(destino)) {
+                                System.out.println("Se elimino una imagen anterior con el nombre: " + destino.toUri() + " con exito"); //Mandamos el mensaje de que se elimino la captura
+                            }// en caso de que no se prosigue
+                            FileUtils.copyFile(origen.toFile(), new File(destino.toUri()));
+                            System.out.println("Se cambio la imagen a la nueva ruta " + destino);
                         } catch (IOException e) {
                             System.out.println("Error al copiar: " + e.getMessage());
                         }
