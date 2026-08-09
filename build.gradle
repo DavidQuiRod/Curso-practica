@@ -28,7 +28,7 @@ dependencies {
 
 group = 'liverpool'
 version = '1.0-SNAPSHOT'
-description = 'liverpool-automation'
+description = 'Framework-automation-David'
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 publishing {
