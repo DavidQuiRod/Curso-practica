@@ -45,6 +45,7 @@ public class HomePage {
         try{
             utilsFuntions = new utilities(driver);
             driver.get(URL);
+
             utilsFuntions.takeScrenShot("Se abre el navegador");
         } catch (RuntimeException e) {
             System.out.println("No se logro abrir el navegador revisa tu driver");
@@ -53,7 +54,7 @@ public class HomePage {
         }
 
     }
-    public void abrirNavegadorConLaUrlDesdeHomePage(String urlName){
+    public void abrirNavegadorConLaUrlDesdeHomePage(String urlName)throws Exception{
         try{
             utilsFuntions = new utilities(driver);
             String filePathEnviroment=directorio+"\\src\\test\\java\\config\\environments.properties"; //Archivo de donde estraeremos la url
@@ -61,6 +62,7 @@ public class HomePage {
             props.load(Files.newInputStream(new File(filePathEnviroment).toPath())); //Se genera el objecto para leer el archivo
             String url=String.valueOf(props.get(urlName)); // Se declara una variable cadena para que este obtenga el valor del objeto en forma de cadena de la ruta donde la indicamos
             driver.get(url);
+            Thread.sleep(10000);
             utilsFuntions.takeScrenShot("Se abre el navegador");
         } catch (IOException |RuntimeException e) {
             System.out.println("No se logro abrir el navegador revisa tu driver");

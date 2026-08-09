@@ -10,7 +10,9 @@ public class DriverManager {
 
     private static WebDriver driver;
 
-    public static WebDriver getDriver() { return driver; }
+    public static WebDriver getDriver() {
+        return driver;
+    }
 
     public static void init() {
         if (driver == null) {
@@ -18,7 +20,7 @@ public class DriverManager {
             options.addArguments("--start-maximized");
             options.addArguments("--disable-notifications");
 
-            driver = new ChromeDriver(options); 
+            driver = new ChromeDriver(options);
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         }
     }
