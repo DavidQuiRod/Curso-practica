@@ -114,6 +114,9 @@ public class utilities {
             }
             //LLenar de informacion el archivo word
             vaciarInformacionEnDocumentoWord(rutaDondeExtraeremosLasImagenes, rutaDeArchivoEnCasoDeExistir);
+            //Reiniciamos el contador a 1;
+            screenshotCounter=1;
+
         } catch (IOException e) {
             System.err.println("Ocurrió un error al querer crear el reporte " + e.getMessage());
         }

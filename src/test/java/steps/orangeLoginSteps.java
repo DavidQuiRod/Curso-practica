@@ -36,4 +36,9 @@ public class orangeLoginSteps {
         orangeActions = new orangeLoginPageObjects(DriverManager.getDriver());
         orangeActions.elUsuarioDaClicEnBotonLogin();
     }
+    @When("El usuario ingresa el valor {string} en el campo {string} de la pagina")
+    public void ingresarValorEnCampo(String textInput, String campo){
+        orangeActions =new orangeLoginPageObjects(DriverManager.getDriver());
+        orangeActions.elUsuarioIngresaValor(textInput, campo);
+    }
 }
