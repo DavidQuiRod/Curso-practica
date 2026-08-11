@@ -264,7 +264,20 @@ public class utilities {
         } catch (IOException e) {
             System.err.println("Ocurrió un error: " + e.getMessage());
         }
-
+    }
+    public void darClicEnBoton(String xpathElement,String botonName){
+        WebElement btnADarClic;
+        try {
+                btnADarClic=driver.findElement(By.xpath(xpathElement));
+                elemtIsVisible(btnADarClic);
+                hightLight(btnADarClic);
+                takeScrenShot("Se da clic en el boton "+ botonName );
+                btnADarClic.click();
+        } catch (Exception e) {
+            System.out.println("No existe ningun botón con el nombre que asignaste " + botonName);
+            finPrueba();
+            throw e;
+        }
     }
 
 }
