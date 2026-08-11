@@ -23,3 +23,14 @@ Feature: Practica
     Then El usuario da clic en "btnq123q" en el navbar de la pagina Dashboard
     Then El usuario espera 10 segundos
     Then finaliza el test "dashboard2" y se cierra navegador
+
+
+  @dashboard3
+  Scenario: Dar clic en PIM
+    Given El usuario abre la pagina "urlDavid" en el navegador
+    When El usuario ingresa el valor "Admin" en el campo "Username" de la pagina
+    When El usuario ingresa el valor "admin123" en el campo "Password" de la pagina
+    Then El usuario da clic en el boton login
+    Then El usuario da clic en "PIM" en el navbar de la pagina Dashboard
+    Then El usuario espera 10 segundos
+    Then finaliza el test "dashboard3" y se cierra navegador
