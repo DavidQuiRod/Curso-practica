@@ -37,8 +37,13 @@ public class orangeLoginSteps {
         orangeActions.elUsuarioDaClicEnBotonLogin();
     }
     @When("El usuario ingresa el valor {string} en el campo {string} de la pagina")
-    public void ingresarValorEnCampo(String textInput, String campo){
+    public void ingresarValorEnCampo(String valorAIngresar, String elementoAlQueAPuntoElValorIngresado){
         orangeActions =new orangeLoginPageObjects(DriverManager.getDriver());
-        orangeActions.elUsuarioIngresaValor(textInput, campo);
+        orangeActions.elUsuarioIngresaValor(valorAIngresar, elementoAlQueAPuntoElValorIngresado);
+    }
+    @Then("El usuario da clic en {string} en el navbar de la pagina Dashboard")
+    public void darClicEnOpcionesNavbarPaginaDeInicio(String nameButton){
+        orangeActions= new orangeLoginPageObjects(DriverManager.getDriver());
+        orangeActions.elUsuarioDaClicEnLasOpcionesDelNavbar(nameButton);
     }
 }

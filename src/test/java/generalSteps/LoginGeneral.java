@@ -10,6 +10,7 @@ package generalSteps;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import liverpool.core.DriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -19,12 +20,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Properties;
+import utils.utilities;
 
 public class LoginGeneral {
     Properties props = new Properties(); //properties para leer un documento
     WebDriver driver; //Inicializar driver
     String directorio = System.getProperty("user.dir");
     WebDriver dvr;
+    utilities utilsFuntions;
     ChromeOptions options= new ChromeOptions();
     EdgeOptions optionn=new EdgeOptions();
 
@@ -63,7 +66,9 @@ public class LoginGeneral {
     }
 @Then("El usuario espera {int} segundos")
     public void esperamosLaCarga(int numTotalSegundos) throws Exception{
-        Thread.sleep(1000* numTotalSegundos);
+    utilsFuntions = new utilities(DriverManager.getDriver());
+        Thread.sleep(1000L* numTotalSegundos);
+        utilsFuntions.takeScrenShot("Se realizo una espera de "+numTotalSegundos+ " segundos");
         System.out.println("Se hizo una espera de "+numTotalSegundos+ " segundos");
 }
     /*
